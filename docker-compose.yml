@@ -1,0 +1,11 @@
+services:
+  calculator:
+    build:
+      context: .
+      dockerfile: calculator/Dockerfile
+    hostname: calculator
+    container_name: calculator
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./calculator:/home/app/calculator
