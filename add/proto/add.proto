@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package add;
+
+service AddService {
+  // Jednoduché RPC pro sečtení dvou čísel
+  rpc Add (AddRequest) returns (AddResponse) {}
+}
+
+message AddRequest {
+  float x = 1;
+  float y = 2;
+}
+
+message AddResponse {
+  float result = 1;
+}

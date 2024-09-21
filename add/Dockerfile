@@ -9,6 +9,7 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/cache/apt/*
 
+# Stage: UV setup
 FROM base AS uv
 ENV UV_PYTHON_PREFERENCE=only-system
 ENV UV_PYTHON_DOWNLOADS=never
@@ -18,20 +19,25 @@ ENV UV_PROJECT_ENVIRONMENT=/usr/local/
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 ENV PATH="/root/.local/bin:${PATH}"
 
+# Stage: Development setup
 FROM uv AS dev
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen # --no-install-project
 
+# Stage: Production setup
 FROM uv AS prod
 ENV UV_COMPILE_BYTECODE=1
-EXPOSE 8000
+EXPOSE 50051
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 RUN uv sync --no-dev --locked
 
-COPY calculator/ ./calculator
+COPY add/ ./add
+
+# Set PYTHONPATH, aby Python našel správnou cestu
+ENV PYTHONPATH=/app
 
 # Set a non-root user for security
 RUN adduser --disabled-password --gecos '' myuser
@@ -41,4 +47,5 @@ RUN chown -R myuser:myuser /app
 
 USER myuser
 
-CMD ["uvicorn", "calculator.src.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop"]
+# CMD pro spuštění pouze gRPC serveru
+CMD ["python", "add/src/main.py"]

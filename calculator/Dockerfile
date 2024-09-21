@@ -25,7 +25,6 @@ RUN uv sync --frozen # --no-install-project
 
 FROM uv AS prod
 ENV UV_COMPILE_BYTECODE=1
-EXPOSE 8000
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 

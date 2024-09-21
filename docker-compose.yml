@@ -8,4 +8,15 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./calculator:/home/app/calculator
+      - ./calculator:/app/calculator
+
+  add:
+    build:
+      context: .
+      dockerfile: add/Dockerfile
+    hostname: add
+    container_name: add
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./add:/app/add
