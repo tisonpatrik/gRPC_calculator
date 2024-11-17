@@ -10,4 +10,5 @@ dependencies = [
     "grpcio-tools>=1.66.1",
     "fastapi[standard]>=0.115.0",
     "orjson>=3.10.7",
+    "mypy-protobuf>=3.6.0",
 ]

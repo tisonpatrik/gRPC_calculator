@@ -20,24 +20,22 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 FROM uv AS dev
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
+COPY calculator/pyproject.toml calculator/uv.lock ./
 RUN uv sync --frozen # --no-install-project
 
 FROM uv AS prod
 ENV UV_COMPILE_BYTECODE=1
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
+COPY calculator/pyproject.toml calculator/uv.lock ./
 
-RUN uv sync --no-dev --locked
+RUN uv sync --no-dev
 
-COPY calculator/ ./calculator
+COPY calculator/src/calculator/ /app/calculator
 
 # Set a non-root user for security
 RUN adduser --disabled-password --gecos '' myuser
-
-# Ensure /app directory exists and set ownership to myuser
 RUN chown -R myuser:myuser /app
 
 USER myuser
 
-CMD ["uvicorn", "calculator.src.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop"]
+CMD ["uvicorn", "calculator.main:app", "--host", "0.0.0.0", "--port", "8000","--loop", "uvloop", "--reload"]

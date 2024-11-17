@@ -130,6 +130,7 @@ dependencies = [
     { name = "grpc-interceptor" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
+    { name = "mypy-protobuf" },
     { name = "orjson" },
 ]
 
@@ -139,6 +140,7 @@ requires-dist = [
     { name = "grpc-interceptor", specifier = ">=0.15.4" },
     { name = "grpcio", specifier = ">=1.66.1" },
     { name = "grpcio-tools", specifier = ">=1.66.1" },
+    { name = "mypy-protobuf", specifier = ">=3.6.0" },
     { name = "orjson", specifier = ">=3.10.7" },
 ]
 
@@ -304,6 +306,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979 },
+]
+
+[[package]]
+name = "mypy-protobuf"
+version = "3.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "protobuf" },
+    { name = "types-protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4d/6f/282d64d66bf48ce60e38a6560753f784e0f88ab245ac2fb5e93f701a36cd/mypy-protobuf-3.6.0.tar.gz", hash = "sha256:02f242eb3409f66889f2b1a3aa58356ec4d909cdd0f93115622e9e70366eca3c", size = 24445 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/73/d6b999782ae22f16971cc05378b3b33f6a89ede3b9619e8366aa23484bca/mypy_protobuf-3.6.0-py3-none-any.whl", hash = "sha256:56176e4d569070e7350ea620262478b49b7efceba4103d468448f1d21492fd6c", size = 16434 },
 ]
 
 [[package]]
@@ -511,6 +526,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c5/58/a79003b91ac2c6890fc5d90145c662fd5771c6f11447f116b63300436bc9/typer-0.12.5.tar.gz", hash = "sha256:f592f089bedcc8ec1b974125d64851029c3b1af145f04aca64d69410f0c9b722", size = 98953 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a8/2b/886d13e742e514f704c33c4caa7df0f3b89e5a25ef8db02aa9ca3d9535d5/typer-0.12.5-py3-none-any.whl", hash = "sha256:62fe4e471711b147e3365034133904df3e235698399bc4de2b36c8579298d52b", size = 47288 },
+]
+
+[[package]]
+name = "types-protobuf"
+version = "5.27.0.20240920"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/cf/80b689ffdafaeeef50bdb474026349b1cc225b4da628cdb924133020055c/types-protobuf-5.27.0.20240920.tar.gz", hash = "sha256:992d695315d11eb2d25e806122c9e1fd9fec282e96104f0a0cb9226cd5d90293", size = 54283 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/85/63/b92c752d9ec4e3da67d4daa7d4b25dfbca557c0be4d13bf9640424edc7fe/types_protobuf-5.27.0.20240920-py3-none-any.whl", hash = "sha256:c04140bd3c761a55f4e661372b24a6f508169e0815f2b73da33f34b447ed7a8d", size = 68771 },
 ]
 
 [[package]]

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from calculator.src.api.routers.calculator_route import router as add_endpoint
+from calculator.api.routers.calculator_route import router as add_endpoint
 
 app_configs = {
     "title": "Calculator API",

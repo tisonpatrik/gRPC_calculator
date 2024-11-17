@@ -9,7 +9,6 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/cache/apt/*
 
-# Stage: UV setup
 FROM base AS uv
 ENV UV_PYTHON_PREFERENCE=only-system
 ENV UV_PYTHON_DOWNLOADS=never
@@ -19,33 +18,24 @@ ENV UV_PROJECT_ENVIRONMENT=/usr/local/
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 ENV PATH="/root/.local/bin:${PATH}"
 
-# Stage: Development setup
 FROM uv AS dev
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
+COPY time_series/pyproject.toml time_series/uv.lock ./
 RUN uv sync --frozen # --no-install-project
 
-# Stage: Production setup
 FROM uv AS prod
 ENV UV_COMPILE_BYTECODE=1
-EXPOSE 50051
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
+COPY time_series/pyproject.toml time_series/uv.lock ./
 
-RUN uv sync --no-dev --locked
+RUN uv sync --no-dev
 
-COPY add/ ./add
-
-# Set PYTHONPATH, aby Python našel správnou cestu
-ENV PYTHONPATH=/app
+COPY time_series/src/time_series/ /app/time_series
 
 # Set a non-root user for security
 RUN adduser --disabled-password --gecos '' myuser
-
-# Ensure /app directory exists and set ownership to myuser
 RUN chown -R myuser:myuser /app
 
 USER myuser
 
-# CMD pro spuštění pouze gRPC serveru
-CMD ["python", "add/src/main.py"]
+CMD ["uvicorn", "time_series.main:app", "--host", "0.0.0.0", "--port", "8000","--loop", "uvloop", "--reload"]

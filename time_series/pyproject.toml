@@ -1,5 +1,5 @@
 [project]
-name = "add"
+name = "time_series_grpc"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,6 +8,4 @@ dependencies = [
     "grpc-interceptor>=0.15.4",
     "grpcio>=1.66.1",
     "grpcio-tools>=1.66.1",
-    "fastapi[standard]>=0.115.0",
-    "orjson>=3.10.7",
 ]
