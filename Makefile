@@ -21,3 +21,7 @@ down:
 .PHONY: tests
 tests: run
 	@echo "IMPLEMENT IT"
+
+.PHONY: protos
+protos:
+	$(MAKE) -C grpc_api protos

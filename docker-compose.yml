@@ -9,3 +9,14 @@ services:
       - "8000:8000"
     volumes:
       - ./calculator/src/calculator:/app/calculator
+
+  grpc_api:
+    build:
+      context: .
+      dockerfile: grpc_api/Dockerfile
+    hostname: grpc_api
+    container_name: grpc_api
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./grpc_api/src/grpc_api:/app/grpc_api

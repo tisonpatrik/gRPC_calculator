@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package time_series;
+import "google/protobuf/timestamp.proto";
+
+// Message representing a single data point in the time series
+message SeriesPoint {
+    google.protobuf.Timestamp time = 1; // Timestamp for the data point
+    float price = 2;                   // Price value as a float
+}
+
+// Message representing a time series (list of data points)
+message Series {
+    repeated SeriesPoint points = 1; // A repeated field for the time series data points
+}
+
+// Request to fetch a time series of a specific length
+message TimeSeriesRequest {
+    int32 length = 1; // The desired length of the time series
+}
+
+// Response containing the generated or fetched time series
+message TimeSeriesResponse {
+    Series series = 1; // The time series data of the requested length
+}
+
+// Service definition for generating time series data
+service TimeSeriesService {
+    // RPC method to generate a time series based on the requested length
+    rpc GenerateTimeSeries (TimeSeriesRequest) returns (TimeSeriesResponse);
+}
