@@ -3,6 +3,7 @@ from datetime import datetime
 import grpc
 import httpx
 import pandas as pd
+import pyarrow as pa
 from fastapi import APIRouter, FastAPI, HTTPException, status
 from fastapi.responses import ORJSONResponse
 
@@ -52,24 +53,26 @@ async def grpc_generate_time_series(length: int):
         start_time = datetime.now()
         stub = time_series_pb2_grpc.TimeSeriesServiceStub(channel)
         grpc_request = time_series_pb2.TimeSeriesRequest(length=length)
+
+        # Make the gRPC call to generate the time series
         try:
-            response = stub.GenerateTimeSeries(grpc_request)
-
-            # Convert the series points to a list of dictionaries
-            series_data = [
-                {"time": point.time.ToDatetime().isoformat(), "price": point.price}
-                for point in response.series.points
-            ]
-
+            grpc_response = stub.GenerateTimeSeries(grpc_request)
         except grpc.RpcError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"gRPC error: {str(e)}",
+                detail=f"gRPC error: {e.details()}",
             )
 
-    # Create a Pandas DataFrame for the data
-    df = pd.DataFrame(series_data)
-    series = pd.Series(df["price"].values, index=df["time"])
+        # Deserialize the Arrow data into a Pandas DataFrame
+        serialized_data = grpc_response.serialized_series
+        buffer = pa.BufferReader(serialized_data)
+        reader = pa.ipc.open_file(buffer)
+        table = reader.read_all()
+        df = table.to_pandas()
+
+        # Convert DataFrame to a Pandas Series
+        series = pd.Series(data=df["price"].values, index=pd.to_datetime(df["time"]))
+
     end_time = datetime.now()
     print(f"Time taken to generate time series via gRPC: {end_time - start_time}")
     return series.head()

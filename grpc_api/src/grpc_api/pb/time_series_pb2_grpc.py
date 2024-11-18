@@ -49,7 +49,7 @@ class TimeSeriesServiceServicer(object):
     """Service definition for generating time series data"""
 
     def GenerateTimeSeries(self, request, context):
-        """RPC method to generate a time series based on the requested length"""
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")

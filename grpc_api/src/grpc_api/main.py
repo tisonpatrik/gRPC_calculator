@@ -1,48 +1,55 @@
-# grpc/src/grpc/main.py
-
-import random
-from concurrent import futures
 from datetime import datetime, timedelta
 
 import grpc
+import numpy as np
 import pandas as pd
+import pyarrow as pa
 
-from grpc_api.pb.time_series_pb2 import Series, SeriesPoint, TimeSeriesResponse
-from grpc_api.pb.time_series_pb2_grpc import (
-    TimeSeriesServiceServicer,
-    add_TimeSeriesServiceServicer_to_server,
-)
+from grpc_api.pb import time_series_pb2, time_series_pb2_grpc
 
 
-class TimeSeriesService(TimeSeriesServiceServicer):
-    def GenerateTimeSeries(self, request, context):
-        # Generate a Pandas Series of the specified length
+class TimeSeriesService(time_series_pb2_grpc.TimeSeriesServiceServicer):
+    async def GenerateTimeSeries(self, request, context):
+        """
+        Generate a time series of the specified length using Apache Arrow for serialization.
+        """
         length = request.length
         start_time = datetime.now()
+
+        # Generate timestamps and random prices
         timestamps = [start_time + timedelta(minutes=i) for i in range(length)]
-        prices = [random.uniform(10, 100) for _ in range(length)]  # Random prices
+        prices = np.random.uniform(10, 100, size=length)
 
-        pandas_series = pd.Series(data=prices, index=timestamps)
+        # Create a Pandas DataFrame
+        df = pd.DataFrame({"time": timestamps, "price": prices})
 
-        # Convert Pandas Series to gRPC Series message
-        series = Series()
-        for timestamp, price in pandas_series.items():
-            point = SeriesPoint()
-            point.time.FromDatetime(timestamp)  # Ensure gRPC Timestamp compatibility
-            point.price = price
-            series.points.append(point)
+        # Serialize the DataFrame to Arrow format
+        table = pa.Table.from_pandas(df)
+        sink = pa.BufferOutputStream()
+        writer = pa.ipc.new_file(sink, table.schema)
+        writer.write_table(table)
+        writer.close()
+        serialized_data = sink.getvalue().to_pybytes()
 
-        return TimeSeriesResponse(series=series)
+        # Return the serialized Arrow data in the response
+        return time_series_pb2.TimeSeriesResponse(serialized_series=serialized_data)
 
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    add_TimeSeriesServiceServicer_to_server(TimeSeriesService(), server)
+async def serve():
+    """
+    Start the gRPC server.
+    """
+    server = grpc.aio.server()
+    time_series_pb2_grpc.add_TimeSeriesServiceServicer_to_server(
+        TimeSeriesService(), server
+    )
     server.add_insecure_port("[::]:50051")
-    server.start()
+    await server.start()
     print("Server started on port 50051.")
-    server.wait_for_termination()
+    await server.wait_for_termination()
 
 
 if __name__ == "__main__":
-    serve()
+    import asyncio
+
+    asyncio.run(serve())

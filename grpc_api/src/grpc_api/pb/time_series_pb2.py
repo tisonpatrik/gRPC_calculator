@@ -22,24 +22,19 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11time_series.proto\x12\x0btime_series\x1a\x1fgoogle/protobuf/timestamp.proto\"F\n\x0bSeriesPoint\x12(\n\x04time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05price\x18\x02 \x01(\x02\"2\n\x06Series\x12(\n\x06points\x18\x01 \x03(\x0b\x32\x18.time_series.SeriesPoint\"#\n\x11TimeSeriesRequest\x12\x0e\n\x06length\x18\x01 \x01(\x05\"9\n\x12TimeSeriesResponse\x12#\n\x06series\x18\x01 \x01(\x0b\x32\x13.time_series.Series2j\n\x11TimeSeriesService\x12U\n\x12GenerateTimeSeries\x12\x1e.time_series.TimeSeriesRequest\x1a\x1f.time_series.TimeSeriesResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11time_series.proto\x12\x0btime_series\"#\n\x11TimeSeriesRequest\x12\x0e\n\x06length\x18\x01 \x01(\x05\"/\n\x12TimeSeriesResponse\x12\x19\n\x11serialized_series\x18\x01 \x01(\x0c\x32j\n\x11TimeSeriesService\x12U\n\x12GenerateTimeSeries\x12\x1e.time_series.TimeSeriesRequest\x1a\x1f.time_series.TimeSeriesResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'time_series_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_SERIESPOINT']._serialized_start=67
-  _globals['_SERIESPOINT']._serialized_end=137
-  _globals['_SERIES']._serialized_start=139
-  _globals['_SERIES']._serialized_end=189
-  _globals['_TIMESERIESREQUEST']._serialized_start=191
-  _globals['_TIMESERIESREQUEST']._serialized_end=226
-  _globals['_TIMESERIESRESPONSE']._serialized_start=228
-  _globals['_TIMESERIESRESPONSE']._serialized_end=285
-  _globals['_TIMESERIESSERVICE']._serialized_start=287
-  _globals['_TIMESERIESSERVICE']._serialized_end=393
+  _globals['_TIMESERIESREQUEST']._serialized_start=34
+  _globals['_TIMESERIESREQUEST']._serialized_end=69
+  _globals['_TIMESERIESRESPONSE']._serialized_start=71
+  _globals['_TIMESERIESRESPONSE']._serialized_end=118
+  _globals['_TIMESERIESSERVICE']._serialized_start=120
+  _globals['_TIMESERIESSERVICE']._serialized_end=226
 # @@protoc_insertion_point(module_scope)
