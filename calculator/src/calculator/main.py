@@ -8,6 +8,21 @@ from fastapi.responses import ORJSONResponse
 
 from calculator.pb import time_series_pb2, time_series_pb2_grpc
 
+
+def from_api_to_series(items: dict) -> pd.Series:
+    columns = ["time", "price"]
+    data = pd.DataFrame(list(items.items()))
+    data.columns = columns
+    data["time"] = pd.to_datetime(data["time"], errors="coerce").dt.strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    sorted_data_frame = data.sort_values(by="time")
+    series = pd.Series(
+        sorted_data_frame["price"].values, index=sorted_data_frame["time"]
+    )
+    return series
+
+
 # FastAPI app configurations
 app_configs = {
     "title": "Calculator API",
@@ -53,7 +68,8 @@ async def grpc_generate_time_series(length: int):
             )
 
     # Create a Pandas DataFrame for the data
-    series = pd.DataFrame(series_data)
+    df = pd.DataFrame(series_data)
+    series = pd.Series(df["price"].values, index=df["time"])
     end_time = datetime.now()
     print(f"Time taken to generate time series via gRPC: {end_time - start_time}")
     return series.head()
@@ -83,7 +99,7 @@ async def http_generate_time_series(length: int):
         )
 
     # Create a Pandas DataFrame for the data
-    series = pd.DataFrame(data)
+    series = from_api_to_series(data)
     end_time = datetime.now()
     print(f"Time taken to generate time series via http: {end_time - start_time}")
     return series.head()
