@@ -89,7 +89,7 @@ class TimeSeriesService(object):
         timeout=None,
         metadata=None,
     ):
-        return grpc.experimental.unary_unary(
+        return grpc.experimental.unary_unary(  # type: ignore
             request,
             target,
             "/time_series.TimeSeriesService/GenerateTimeSeries",

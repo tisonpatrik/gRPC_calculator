@@ -6,6 +6,7 @@ import pandas as pd
 import pyarrow as pa
 from fastapi import APIRouter, FastAPI, HTTPException, status
 from fastapi.responses import ORJSONResponse
+from grpc import RpcError
 
 from calculator.pb import time_series_pb2, time_series_pb2_grpc
 
@@ -57,10 +58,9 @@ async def grpc_generate_time_series(length: int):
         # Make the gRPC call to generate the time series
         try:
             grpc_response = stub.GenerateTimeSeries(grpc_request)
-        except grpc.RpcError as e:
+        except RpcError:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"gRPC error: {e.details()}",
             )
 
         # Deserialize the Arrow data into a Pandas DataFrame

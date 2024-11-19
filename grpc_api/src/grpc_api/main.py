@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 
 import grpc
@@ -50,6 +51,4 @@ async def serve():
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(serve())
