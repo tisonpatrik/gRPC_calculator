@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import grpc
 import httpx
 import pandas as pd
@@ -25,17 +23,13 @@ def from_api_to_series(items: dict) -> pd.Series:
     return series
 
 
-# FastAPI app configurations
-app_configs = {
-    "title": "Calculator API",
-    "description": "Service to provide calculations using gRPC and HTTP",
-    "version": "0.1.0",
-    "redirect_slashes": False,
-    "default_response_class": ORJSONResponse,
-}
-
-# Initialize the FastAPI app
-app = FastAPI(**app_configs)
+app = FastAPI(
+    title="Calculator API",
+    description="Service to provide calculations using gRPC and HTTP",
+    version="0.1.0",
+    redirect_slashes=False,
+    default_response_class=ORJSONResponse,
+)
 
 # Create the API router
 router = APIRouter()
@@ -51,17 +45,16 @@ async def grpc_generate_time_series(length: int):
     Endpoint to generate a time series using the gRPC service.
     """
     with grpc.insecure_channel("grpc_api:50051") as channel:
-        start_time = datetime.now()
         stub = time_series_pb2_grpc.TimeSeriesServiceStub(channel)
         grpc_request = time_series_pb2.TimeSeriesRequest(length=length)
 
         # Make the gRPC call to generate the time series
         try:
             grpc_response = stub.GenerateTimeSeries(grpc_request)
-        except RpcError:
+        except RpcError as err:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            ) from err
 
         # Deserialize the Arrow data into a Pandas DataFrame
         serialized_data = grpc_response.serialized_series
@@ -73,8 +66,6 @@ async def grpc_generate_time_series(length: int):
         # Convert DataFrame to a Pandas Series
         series = pd.Series(data=df["price"].values, index=pd.to_datetime(df["time"]))
 
-    end_time = datetime.now()
-    print(f"Time taken to generate time series via gRPC: {end_time - start_time}")
     return series.head()
 
 
@@ -89,7 +80,6 @@ async def http_generate_time_series(length: int):
     """
     api_url = "http://rest_api:8100/generate_time_series/"
 
-    start_time = datetime.now()
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, params={"length": length})
@@ -98,13 +88,11 @@ async def http_generate_time_series(length: int):
     except httpx.HTTPError as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"HTTP error: {str(e)}",
-        )
+            detail=f"HTTP error: {e!s}",
+        ) from e
 
     # Create a Pandas DataFrame for the data
     series = from_api_to_series(data)
-    end_time = datetime.now()
-    print(f"Time taken to generate time series via http: {end_time - start_time}")
     return series.head()
 
 

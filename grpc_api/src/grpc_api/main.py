@@ -46,7 +46,6 @@ async def serve():
     )
     server.add_insecure_port("[::]:50051")
     await server.start()
-    print("Server started on port 50051.")
     await server.wait_for_termination()
 
 

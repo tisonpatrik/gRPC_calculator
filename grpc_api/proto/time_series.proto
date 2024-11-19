@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package time_series;
-
 // Request to fetch a time series of a specific length
 message TimeSeriesRequest {
     int32 length = 1; // The desired length of the time series

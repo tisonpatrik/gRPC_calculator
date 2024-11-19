@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+
+// Request to fetch a time series of a specific length
+message FakeTimeSeriesRequest {
+    int32 length = 1; // The desired length of the time series
+    string source = 2; // Optional source identifier
+    string filter = 3; // Optional filter for data
+}
+
+// Response containing the serialized time series
+message FakeTimeSeriesResponse {
+    bytes serialized_series = 1; // Serialized time series data (e.g., in Arrow format)
+    string metadata = 2; // Metadata about the time series
+}
+
+// Service definition for generating fake time series data
+service FakeTimeSeriesService {
+    rpc GenerateFakeTimeSeries (FakeTimeSeriesRequest) returns (FakeTimeSeriesResponse);
+    rpc GetFakeTimeSeriesMetadata (FakeTimeSeriesRequest) returns (FakeTimeSeriesResponse);
+    rpc DeleteFakeTimeSeries (FakeTimeSeriesRequest) returns (FakeTimeSeriesResponse);
+}
