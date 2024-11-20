@@ -30,4 +30,5 @@ services:
     ports:
       - "50051:50051"
     volumes:
-      - ./grpc_api/src/grpc_api:/app/grpc_api
+      - ./grpc_api/src/grpc_api:/usr/src/app/
+    command: watchmedo auto-restart --recursive --pattern="*.py" --directory="/usr/src/app/" python -- -m grpc_api.main

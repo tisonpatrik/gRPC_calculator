@@ -10,10 +10,19 @@ import pyarrow as pa
 from grpc_api.pb import time_series_pb2, time_series_pb2_grpc
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Create a console handler and set the log format
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+console_handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(console_handler)
 
 class TimeSeriesService(time_series_pb2_grpc.TimeSeriesServiceServicer):
     async def GenerateTimeSeries(self, request, context):
@@ -35,6 +44,7 @@ class TimeSeriesService(time_series_pb2_grpc.TimeSeriesServiceServicer):
 
             # Create a Pandas DataFrame
             df = pd.DataFrame({"time": timestamps, "price": prices})
+            logger.info(f"Generated time series with {length} rows")
 
             # Serialize the DataFrame to Arrow format
             table = pa.Table.from_pandas(df)
@@ -45,11 +55,13 @@ class TimeSeriesService(time_series_pb2_grpc.TimeSeriesServiceServicer):
             serialized_data = sink.getvalue().to_pybytes()
 
             # Return the serialized Arrow data in the response
+            logger.info("Serialized time series data successfully.")
             return time_series_pb2.TimeSeriesResponse(serialized_series=serialized_data)
 
         except Exception as e:
+            logger.exception("Error generating time series")
             context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(f"Internal server error: {str(e)}")
+            context.set_details("An error occurred while generating the time series.")
             return time_series_pb2.TimeSeriesResponse()
 
 async def serve():
@@ -63,11 +75,14 @@ async def serve():
     server.add_insecure_port("[::]:50051")
 
     try:
+        logger.info("Starting gRPC server on port 50051")
         await server.start()
+        logger.info("Server started. Waiting for requests...")
         await server.wait_for_termination()
     except Exception as e:
-        logging.exception("Error starting server: %s", str(e))
+        logger.exception("Error starting server")
     finally:
+        logger.info("Stopping gRPC server")
         await server.stop(0)
 
 if __name__ == "__main__":
